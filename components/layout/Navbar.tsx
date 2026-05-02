@@ -15,6 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { AvatarWithFallback } from '@/components/shared/AvatarWithFallback'
 import { NotificationsDropdown } from '@/components/layout/NotificationsDropdown'
+import { GlobalSearch } from '@/components/shared/GlobalSearch'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import type { User } from '@supabase/supabase-js'
@@ -50,14 +51,7 @@ export function Navbar({ user, profile }: NavbarProps) {
   return (
     <header className="h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
       <div className="flex items-center flex-1 max-w-2xl">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search projects and tasks..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        <GlobalSearch />
       </div>
 
       <div className="flex items-center gap-4">
