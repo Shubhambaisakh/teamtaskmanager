@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bell, Search, LogOut, User } from 'lucide-react'
+import { Bell, Search, LogOut, User as UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -64,7 +64,7 @@ export function Navbar({ user, profile }: NavbarProps) {
         <NotificationsDropdown />
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
               <AvatarWithFallback
                 src={profile?.avatar_url}
@@ -83,9 +83,9 @@ export function Navbar({ user, profile }: NavbarProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <a href="/dashboard/settings/profile" className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
+            <DropdownMenuItem>
+              <a href="/dashboard/settings/profile" className="cursor-pointer flex items-center">
+                <UserIcon className="mr-2 h-4 w-4" />
                 Profile Settings
               </a>
             </DropdownMenuItem>
