@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ProjectSettingsForm } from '@/components/projects/ProjectSettingsForm'
+import { DeleteProjectButton } from '@/components/projects/DeleteProjectButton'
 
 export default async function ProjectSettingsPage({
   params,
@@ -45,16 +47,50 @@ export default async function ProjectSettingsPage({
     )
   }
 
+  // Fetch project details
+  const { data: project } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (!project) {
+    notFound()
+  }
+
   return (
-    <Card>
-      <CardContent className="p-12 text-center">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-          Project Settings
-        </h3>
-        <p className="text-slate-500 dark:text-slate-400">
-          This feature will be implemented in Phase 4 - Task 8
-        </p>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Project Settings</CardTitle>
+          <CardDescription>
+            Update project information and settings
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ProjectSettingsForm project={project} />
+        </CardContent>
+      </Card>
+
+      <Card className="border-red-200 dark:border-red-900">
+        <CardHeader>
+          <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
+          <CardDescription>
+            Irreversible and destructive actions
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-medium text-slate-900 dark:text-white mb-2">
+              Delete Project
+            </h4>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+              Once you delete a project, there is no going back. All tasks, comments, and data will be permanently deleted.
+            </p>
+            <DeleteProjectButton projectId={id} projectName={project.name} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
