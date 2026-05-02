@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
+import { TaskListView } from '@/components/tasks/TaskListView'
 
 export default async function ProjectListPage({
   params,
@@ -18,7 +18,7 @@ export default async function ProjectListPage({
     redirect('/login')
   }
 
-  // Verify user is a member
+  // Verify user is a member and get role
   const { data: membership } = await supabase
     .from('project_members')
     .select('role')
@@ -30,16 +30,69 @@ export default async function ProjectListPage({
     notFound()
   }
 
+  // Fetch tasks with assignee profiles
+  const { data: tasksData } = await supabase
+    .from('tasks')
+    .select(`
+      id,
+      title,
+      description,
+      status,
+      priority,
+      due_date,
+      assignee_id,
+      profiles!tasks_assignee_id_fkey(
+        id,
+        full_name,
+        email,
+        avatar_url
+      )
+    `)
+    .eq('project_id', id)
+    .order('created_at', { ascending: false })
+
+  // Transform tasks to match expected format
+  const tasks = (tasksData || []).map((task: any) => ({
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    due_date: task.due_date,
+    assignee: task.profiles ? {
+      id: task.profiles.id,
+      full_name: task.profiles.full_name,
+      email: task.profiles.email,
+      avatar_url: task.profiles.avatar_url,
+    } : null,
+  }))
+
+  // Fetch project members for assignee dropdown
+  const { data: membersData } = await supabase
+    .from('project_members')
+    .select(`
+      user_id,
+      profiles(full_name, email, avatar_url)
+    `)
+    .eq('project_id', id)
+
+  // Transform members to match expected format
+  const members = (membersData || []).map((member: any) => ({
+    user_id: member.user_id,
+    profiles: {
+      full_name: member.profiles.full_name,
+      email: member.profiles.email,
+      avatar_url: member.profiles.avatar_url,
+    },
+  }))
+
   return (
-    <Card>
-      <CardContent className="p-12 text-center">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-          List View
-        </h3>
-        <p className="text-slate-500 dark:text-slate-400">
-          This feature will be implemented in Phase 5 - Task 11
-        </p>
-      </CardContent>
-    </Card>
+    <TaskListView
+      tasks={tasks}
+      projectId={id}
+      userRole={membership.role}
+      currentUserId={user.id}
+      members={members}
+    />
   )
 }

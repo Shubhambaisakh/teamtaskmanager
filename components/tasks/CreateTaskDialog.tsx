@@ -93,7 +93,7 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
           New Task
