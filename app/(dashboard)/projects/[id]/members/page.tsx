@@ -21,14 +21,14 @@ export default async function ProjectMembersPage({
   }
 
   // Fetch project members
-  const { data: members, error } = await supabase
+  const { data: membersData, error } = await supabase
     .from('project_members')
     .select(`
       id,
       role,
       joined_at,
       user_id,
-      profiles(full_name, email, avatar_url)
+      profiles!inner(full_name, email, avatar_url)
     `)
     .eq('project_id', id)
     .order('joined_at', { ascending: true })
@@ -36,6 +36,15 @@ export default async function ProjectMembersPage({
   if (error) {
     notFound()
   }
+
+  // Transform the data to match the expected type
+  const members = membersData?.map((member: any) => ({
+    id: member.id,
+    role: member.role,
+    joined_at: member.joined_at,
+    user_id: member.user_id,
+    profiles: Array.isArray(member.profiles) ? member.profiles[0] : member.profiles,
+  })) || []
 
   // Get current user's role
   const currentUserMember = members?.find(m => m.user_id === user.id)
