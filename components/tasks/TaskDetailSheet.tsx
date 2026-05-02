@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { AvatarWithFallback } from '@/components/shared/AvatarWithFallback'
+import { CommentList } from './CommentList'
 import { Trash2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { updateTaskSchema, type UpdateTaskInput } from '@/lib/validations/task.schema'
@@ -375,6 +376,15 @@ export function TaskDetailSheet({
             </div>
           </div>
         </form>
+
+        {/* Comments Section */}
+        <div className="mt-8 pt-6 border-t">
+          <CommentList
+            taskId={task.id}
+            currentUserId={currentUserId}
+            isAdmin={userRole === 'admin'}
+          />
+        </div>
       </SheetContent>
     </Sheet>
   )
