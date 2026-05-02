@@ -160,18 +160,15 @@ describe('Data Integrity Properties', () => {
     fc.assert(
       fc.property(
         fc.record({
-          createdAt: fc.date({ min: new Date('2020-01-01'), max: new Date() }),
-          updatedAt: fc.date({ min: new Date('2020-01-01'), max: new Date() }),
+          createdAtMs: fc.integer({ min: 1000000000000, max: 1700000000000 }),
+          offsetMs: fc.nat(86400000), // 0 to 1 day in ms
         }),
         (scenario) => {
-          // Simulate record with timestamps
-          const record = {
-            created_at: scenario.createdAt,
-            updated_at: scenario.updatedAt > scenario.createdAt ? scenario.updatedAt : scenario.createdAt,
-          }
+          const createdAt = new Date(scenario.createdAtMs)
+          const updatedAt = new Date(scenario.createdAtMs + scenario.offsetMs)
           
           // Property: updated_at should always be >= created_at
-          expect(record.updated_at.getTime()).toBeGreaterThanOrEqual(record.created_at.getTime())
+          expect(updatedAt.getTime()).toBeGreaterThanOrEqual(createdAt.getTime())
         }
       ),
       { numRuns: 100 }
