@@ -79,7 +79,10 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -87,7 +90,7 @@ export async function POST(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }
@@ -184,7 +187,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -192,7 +198,7 @@ export async function DELETE(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }

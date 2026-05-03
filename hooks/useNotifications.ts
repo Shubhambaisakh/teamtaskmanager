@@ -93,8 +93,10 @@ export function useNotifications() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      channel = supabase
-        .channel('notifications')
+      // Create channel and set up listener BEFORE subscribing
+      channel = supabase.channel('notifications')
+      
+      channel
         .on(
           'postgres_changes',
           {

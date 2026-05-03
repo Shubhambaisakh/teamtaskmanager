@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -26,6 +27,7 @@ interface NavbarProps {
     full_name: string
     email: string
     avatar_url: string | null
+    role?: 'admin' | 'member'
   } | null
 }
 
@@ -66,14 +68,23 @@ export function Navbar({ user, profile }: NavbarProps) {
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{profile?.full_name}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {profile?.email}
-                </p>
-              </div>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">{profile?.full_name}</p>
+                    {profile?.role && (
+                      <Badge variant={profile.role === 'admin' ? 'default' : 'secondary'} className="capitalize text-[10px] px-1.5 py-0">
+                        {profile.role}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {profile?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <a href="/settings" className="cursor-pointer flex items-center">

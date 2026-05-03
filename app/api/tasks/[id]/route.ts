@@ -82,7 +82,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
 
-    // Check user's role in the project
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -90,14 +93,16 @@ export async function PATCH(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership) {
+    if (!globalAdmin && !membership) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
+
+    const isAdmin = globalAdmin || (membership?.role === 'admin')
 
     const body = await request.json()
 
     // If user is admin, allow all updates
-    if (membership.role === 'admin') {
+    if (isAdmin) {
       const validation = updateTaskSchema.safeParse(body)
 
       if (!validation.success) {
@@ -198,7 +203,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Task not found' }, { status: 404 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -206,7 +214,7 @@ export async function DELETE(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }

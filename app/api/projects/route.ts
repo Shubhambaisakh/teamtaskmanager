@@ -68,6 +68,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check if user is a global admin
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile || profile.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only admins can create projects' }, { status: 403 })
+    }
+
     const body = await request.json()
     const validation = createProjectSchema.safeParse(body)
 

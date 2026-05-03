@@ -20,9 +20,10 @@ interface Project {
 
 interface ProjectsListProps {
   projects: Project[]
+  globalRole: 'admin' | 'member'
 }
 
-export function ProjectsList({ projects }: ProjectsListProps) {
+export function ProjectsList({ projects, globalRole }: ProjectsListProps) {
   const router = useRouter()
   
   return (
@@ -36,12 +37,14 @@ export function ProjectsList({ projects }: ProjectsListProps) {
             Manage your team projects and track progress
           </p>
         </div>
-        <Link href="/projects/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Project
-          </Button>
-        </Link>
+        {globalRole === 'admin' && (
+          <Link href="/projects/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Project
+            </Button>
+          </Link>
+        )}
       </div>
 
       {projects.length === 0 ? (

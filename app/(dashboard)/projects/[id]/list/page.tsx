@@ -26,9 +26,21 @@ export default async function ProjectListPage({
     .eq('user_id', user.id)
     .single()
 
-  if (!membership) {
+  // Fetch global profile for super-admin check
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isGlobalAdmin = profile?.role === 'admin'
+
+  if (!membership && !isGlobalAdmin) {
     notFound()
   }
+
+  // Use global admin role or project-specific role
+  const effectiveRole = isGlobalAdmin ? 'admin' : (membership?.role || 'member')
 
   // Fetch tasks with assignee profiles
   const { data: tasksData } = await supabase
@@ -90,7 +102,7 @@ export default async function ProjectListPage({
     <TaskListView
       tasks={tasks}
       projectId={id}
-      userRole={membership.role}
+      userRole={effectiveRole}
       currentUserId={user.id}
       members={members}
     />

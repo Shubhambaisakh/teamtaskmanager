@@ -18,12 +18,16 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check if user is a member or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     // Get project with member details
-    const { data: project, error } = await supabase
+    const query = supabase
       .from('projects')
       .select(`
         *,
-        project_members!inner(
+        project_members(
           id,
           role,
           joined_at,
@@ -32,8 +36,13 @@ export async function GET(
         )
       `)
       .eq('id', id)
-      .eq('project_members.user_id', user.id)
-      .single()
+
+    // If not global admin, only show if they are a member
+    if (!globalAdmin) {
+      query.eq('project_members.user_id', user.id)
+    }
+
+    const { data: project, error } = await query.single()
 
     if (error || !project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
@@ -62,7 +71,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -70,7 +82,7 @@ export async function PATCH(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }
@@ -128,7 +140,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -136,7 +151,7 @@ export async function DELETE(
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }

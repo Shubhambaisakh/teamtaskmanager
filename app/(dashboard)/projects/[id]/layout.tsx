@@ -22,7 +22,7 @@ export default async function ProjectLayout({
   }
 
   // Fetch project with user's role
-  const { data: project, error } = await supabase
+  const { data: projectData, error } = await supabase
     .from('projects')
     .select(`
       *,
@@ -32,21 +32,30 @@ export default async function ProjectLayout({
     .eq('project_members.user_id', user.id)
     .single()
 
-  if (error || !project) {
+  // Fetch global profile for super-admin check
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (error || !projectData) {
     notFound()
   }
 
-  const userRole = project.project_members[0]?.role
+  const isGlobalAdmin = profile?.role === 'admin'
+  const isProjectAdmin = projectData.project_members[0]?.role === 'admin'
+  const canManageProject = isGlobalAdmin || isProjectAdmin
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-          {project.name}
+          {projectData.name}
         </h1>
-        {project.description && (
+        {projectData.description && (
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            {project.description}
+            {projectData.description}
           </p>
         )}
       </div>
@@ -62,7 +71,7 @@ export default async function ProjectLayout({
           <Link href={`/projects/${id}/members`}>
             <TabsTrigger value="members">Members</TabsTrigger>
           </Link>
-          {userRole === 'admin' && (
+          {canManageProject && (
             <Link href={`/projects/${id}/settings`}>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </Link>

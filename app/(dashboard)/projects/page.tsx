@@ -13,6 +13,13 @@ export default async function ProjectsPage() {
     redirect('/login')
   }
 
+  // Fetch user profile for global role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
   // Fetch projects directly from Supabase
   const { data: projects, error } = await supabase
     .from('project_members')
@@ -51,5 +58,5 @@ export default async function ProjectsPage() {
     }
   }) || []
 
-  return <ProjectsList projects={projectsData} />
+  return <ProjectsList projects={projectsData} globalRole={profile?.role || 'member'} />
 }

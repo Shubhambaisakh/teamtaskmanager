@@ -31,7 +31,10 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if user is admin of the project
+    // Check if user is admin of the project or global admin
+    const { isGlobalAdmin } = await import('@/lib/auth')
+    const globalAdmin = await isGlobalAdmin(user.id)
+    
     const { data: membership } = await supabase
       .from('project_members')
       .select('role')
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
       .eq('user_id', user.id)
       .single()
 
-    if (!membership || membership.role !== 'admin') {
+    if (!globalAdmin && (!membership || membership.role !== 'admin')) {
       return NextResponse.json(
         { error: 'You do not have permission to perform this action' },
         { status: 403 }
