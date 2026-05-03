@@ -51,7 +51,7 @@ export function Navbar({ user, profile }: NavbarProps) {
   }
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
+    <header className="h-16 bg-[#0E0E16] border-b border-white/[0.06] flex items-center justify-between px-6 backdrop-blur-sm">
       <div className="flex items-center flex-1 max-w-2xl">
         <GlobalSearch />
       </div>
@@ -60,43 +60,47 @@ export function Navbar({ user, profile }: NavbarProps) {
         <NotificationsDropdown />
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <DropdownMenuTrigger className="relative inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/[0.05] transition-all duration-200 ring-2 ring-transparent hover:ring-[#00BFA5]/30">
             <AvatarWithFallback
               src={profile?.avatar_url}
               alt={profile?.full_name || 'User'}
               fallback={profile?.full_name?.[0] || 'U'}
             />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 bg-[#16161F] border-white/[0.07]">
             <DropdownMenuGroup>
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{profile?.full_name}</p>
+                    <p className="text-sm font-medium text-[#E8E8F0]">{profile?.full_name}</p>
                     {profile?.role && (
-                      <Badge variant={profile.role === 'admin' ? 'default' : 'secondary'} className="capitalize text-[10px] px-1.5 py-0">
+                      <span className={`capitalize text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                        profile.role === 'admin' 
+                          ? 'bg-[#00BFA5]/15 text-[#26D0B8]' 
+                          : 'bg-white/[0.05] text-white/50'
+                      }`}>
                         {profile.role}
-                      </Badge>
+                      </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-white/40">
                     {profile?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-white/[0.07]" />
+            <DropdownMenuItem className="text-white/70 hover:text-[#E8E8F0] hover:bg-white/[0.05]">
               <a href="/settings" className="cursor-pointer flex items-center">
                 <UserIcon className="mr-2 h-4 w-4" />
                 Profile Settings
               </a>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-white/[0.07]" />
             <DropdownMenuItem
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="text-red-600 dark:text-red-400 cursor-pointer"
+              className="text-[#F87171] hover:text-[#F87171] hover:bg-[#F87171]/10 cursor-pointer"
             >
               <LogOut className="mr-2 h-4 w-4" />
               {isSigningOut ? 'Signing out...' : 'Sign Out'}

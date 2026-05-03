@@ -33,16 +33,50 @@ interface KanbanColumnProps {
 export function KanbanColumn({ id, title, tasks, isAdmin, projectId }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
+  // Color coding for each column
+  const columnStyles = {
+    todo: {
+      bg: 'bg-[#111118]',
+      border: 'border-[#F87171]/20',
+      hoverBorder: 'border-[#F87171]/40',
+      badge: 'bg-[#F87171]/15 text-[#F87171]',
+      header: 'text-[#F87171]'
+    },
+    in_progress: {
+      bg: 'bg-[#111118]',
+      border: 'border-[#FBB13C]/20',
+      hoverBorder: 'border-[#FBB13C]/40',
+      badge: 'bg-[#FBB13C]/15 text-[#FBB13C]',
+      header: 'text-[#FBB13C]'
+    },
+    in_review: {
+      bg: 'bg-[#111118]',
+      border: 'border-[#00BFA5]/20',
+      hoverBorder: 'border-[#00BFA5]/40',
+      badge: 'bg-[#00BFA5]/15 text-[#26D0B8]',
+      header: 'text-[#26D0B8]'
+    },
+    done: {
+      bg: 'bg-[#111118]',
+      border: 'border-[#34D399]/20',
+      hoverBorder: 'border-[#34D399]/40',
+      badge: 'bg-[#34D399]/15 text-[#34D399]',
+      header: 'text-[#34D399]'
+    }
+  }
+
+  const style = columnStyles[id as keyof typeof columnStyles] || columnStyles.todo
+
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col bg-slate-50 dark:bg-slate-900 rounded-lg p-4 min-h-[500px] transition-colors ${
-        isOver ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950' : ''
+      className={`flex flex-col ${style.bg} border-2 ${isOver ? style.hoverBorder : style.border} rounded-xl p-4 min-h-[500px] transition-all duration-200 ${
+        isOver ? 'shadow-lg scale-[1.02]' : ''
       }`}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3>
-        <Badge variant="secondary">{tasks.length}</Badge>
+        <h3 className={`font-semibold text-sm uppercase tracking-wide ${style.header}`}>{title}</h3>
+        <span className={`${style.badge} px-2 py-1 rounded-full text-xs font-bold`}>{tasks.length}</span>
       </div>
 
       <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>

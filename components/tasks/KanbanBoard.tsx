@@ -108,7 +108,7 @@ export function KanbanBoard({ projectId, tasks, members, userRole, currentUserId
     <div className="space-y-4">
       {userRole === 'admin' && (
         <div className="flex justify-end">
-          <CreateTaskDialog projectId={projectId} members={members} />
+          <CreateTaskDialog projectId={projectId} />
         </div>
       )}
 

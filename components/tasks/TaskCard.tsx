@@ -29,10 +29,10 @@ interface TaskCardProps {
 }
 
 const priorityColors = {
-  low: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-  medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  high: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
-  critical: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+  low: 'bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30',
+  medium: 'bg-[#FBB13C]/15 text-[#FBB13C] border border-[#FBB13C]/30',
+  high: 'bg-[#F87171]/15 text-[#F87171] border border-[#F87171]/30',
+  critical: 'bg-[#00E5CC]/15 text-[#00E5CC] border border-[#00E5CC]/30',
 }
 
 export function TaskCard({ task, isDragging }: TaskCardProps) {
@@ -57,37 +57,37 @@ export function TaskCard({ task, isDragging }: TaskCardProps) {
     <div ref={setNodeRef} style={style} {...attributes}>
       <Card
         className={cn(
-          'cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow',
-          (isDragging || isSortableDragging) && 'opacity-50'
+          'cursor-grab active:cursor-grabbing transition-all duration-200 bg-[#16161F] border-white/[0.07] hover:border-[#00BFA5]/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#00BFA5]/10',
+          (isDragging || isSortableDragging) && 'opacity-50 rotate-2'
         )}
       >
         <CardContent className="p-4">
           <div className="flex items-start gap-2">
-            <div {...listeners} className="mt-1 cursor-grab">
-              <GripVertical className="h-4 w-4 text-slate-400" />
+            <div {...listeners} className="mt-1 cursor-grab hover:text-[#00BFA5] transition-colors">
+              <GripVertical className="h-4 w-4 text-white/30" />
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-slate-900 dark:text-white line-clamp-2 mb-2">
+              <h4 className="font-medium text-[#E8E8F0] line-clamp-2 mb-2 text-sm">
                 {task.title}
               </h4>
               
               {task.description && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">
+                <p className="text-xs text-white/40 line-clamp-2 mb-3">
                   {task.description}
                 </p>
               )}
 
               <div className="flex items-center justify-between gap-2">
-                <Badge className={priorityColors[task.priority]}>
+                <span className={cn('px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wide', priorityColors[task.priority])}>
                   {task.priority}
-                </Badge>
+                </span>
 
                 {task.assignee && (
                   <AvatarWithFallback
                     src={task.assignee.avatar_url}
                     alt={task.assignee.full_name}
                     fallback={task.assignee.full_name[0]}
-                    className="h-6 w-6"
+                    className="h-6 w-6 border border-white/10"
                   />
                 )}
               </div>
@@ -95,10 +95,10 @@ export function TaskCard({ task, isDragging }: TaskCardProps) {
               {task.due_date && (
                 <div
                   className={cn(
-                    'flex items-center gap-1 mt-2 text-xs',
-                    isOverdue && 'text-red-600 dark:text-red-400 font-semibold',
-                    isDueToday && 'text-amber-600 dark:text-amber-400 font-semibold',
-                    !isOverdue && !isDueToday && 'text-slate-500 dark:text-slate-400'
+                    'flex items-center gap-1 mt-2 text-[10px] font-medium',
+                    isOverdue && 'text-[#F87171]',
+                    isDueToday && 'text-[#FBB13C]',
+                    !isOverdue && !isDueToday && 'text-white/35'
                   )}
                 >
                   {isOverdue ? (

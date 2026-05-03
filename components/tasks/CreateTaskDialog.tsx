@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -26,7 +26,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
+import { Plus, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 const createTaskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
@@ -38,24 +39,28 @@ const createTaskSchema = z.object({
 
 type CreateTaskInput = z.infer<typeof createTaskSchema>
 
-interface CreateTaskDialogProps {
-  projectId: string
-  members: Array<{
-    user_id: string
-    role: string
-    profiles: {
-      id: string
-      full_name: string
-      email: string
-      avatar_url: string | null
-    }
-  }>
+interface Member {
+  user_id: string
+  role: string
+  profiles: {
+    id: string
+    full_name: string
+    email: string
+    avatar_url: string | null
+  }
 }
 
-export function CreateTaskDialog({ projectId, members }: CreateTaskDialogProps) {
+interface CreateTaskDialogProps {
+  projectId: string
+}
+
+export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
   const router = useRouter()
+  const supabase = createClient()
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [members, setMembers] = useState<Member[]>([])
+  const [isFetchingMembers, setIsFetchingMembers] = useState(false)
 
   const {
     register,
@@ -69,6 +74,58 @@ export function CreateTaskDialog({ projectId, members }: CreateTaskDialogProps) 
       priority: 'medium',
     },
   })
+
+  // Fetch project members when dialog opens
+  useEffect(() => {
+    if (isOpen && projectId) {
+      fetchProjectMembers()
+    }
+  }, [isOpen, projectId])
+
+  const fetchProjectMembers = async () => {
+    setIsFetchingMembers(true)
+    try {
+      console.log('Fetching members for project:', projectId)
+      
+      const { data, error } = await supabase
+        .from('project_members')
+        .select(`
+          user_id,
+          role,
+          profiles:user_id (
+            id,
+            full_name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('project_id', projectId)
+
+      console.log('Members data:', data)
+      console.log('Members error:', error)
+
+      if (error) {
+        console.error('Error fetching members:', error)
+        toast.error('Failed to load project members')
+        return
+      }
+
+      // Transform the data to match Member type
+      const transformedMembers = (data || []).map((member: any) => ({
+        user_id: member.user_id,
+        role: member.role,
+        profiles: Array.isArray(member.profiles) ? member.profiles[0] : member.profiles
+      }))
+
+      console.log('Setting members:', transformedMembers.length, 'members found')
+      setMembers(transformedMembers)
+    } catch (error) {
+      console.error('Unexpected error:', error)
+      toast.error('Failed to load project members')
+    } finally {
+      setIsFetchingMembers(false)
+    }
+  }
 
   const onSubmit = async (data: CreateTaskInput) => {
     setIsLoading(true)
@@ -104,8 +161,8 @@ export function CreateTaskDialog({ projectId, members }: CreateTaskDialogProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger render={<Button />}>
-        <Plus className="h-4 w-4 mr-2" />
+      <DialogTrigger className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium text-sm transition-all duration-200 hover:transform hover:-translate-y-0.5 shadow-lg" style={{ background: 'linear-gradient(135deg, #00BFA5, #00A896)', boxShadow: '0 4px 16px rgba(0, 191, 165, 0.35)' }}>
+        <Plus className="h-4 w-4" />
         New Task
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
@@ -163,19 +220,33 @@ export function CreateTaskDialog({ projectId, members }: CreateTaskDialogProps) 
             <div className="space-y-2">
               <Label htmlFor="assignee">Assignee</Label>
               <Select
-                onValueChange={(value) => setValue('assignee_id', value as string | undefined)}
-                disabled={isLoading}
+                onValueChange={(value: string | null) => setValue('assignee_id', value === 'unassigned' || !value ? undefined : value)}
+                disabled={isLoading || isFetchingMembers}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select assignee (optional)" />
+                  <SelectValue placeholder={
+                    isFetchingMembers 
+                      ? "Loading members..." 
+                      : "Select assignee (optional)"
+                  } />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Unassigned</SelectItem>
-                  {members.map((member) => (
-                    <SelectItem key={member.user_id} value={member.user_id}>
-                      {member.profiles.full_name} ({member.role})
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {isFetchingMembers ? (
+                    <div className="flex items-center justify-center py-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : members.length === 0 ? (
+                    <div className="py-2 px-2 text-sm text-slate-500">
+                      No members found
+                    </div>
+                  ) : (
+                    members.map((member) => (
+                      <SelectItem key={member.user_id} value={member.user_id}>
+                        {member.profiles.full_name} ({member.role})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>

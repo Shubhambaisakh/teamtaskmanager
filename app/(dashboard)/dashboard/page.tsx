@@ -77,16 +77,28 @@ export default async function DashboardPage() {
     .limit(10)
 
   // Fetch user's projects with progress
-  const { data: projects } = await supabase
-    .from('projects')
-    .select(`
-      id,
-      name,
-      tasks(id, status)
-    `)
-    .eq('project_members.user_id', user.id)
-    .is('archived_at', null)
-    .limit(5)
+  const { data: userProjects } = await supabase
+    .from('project_members')
+    .select('project_id')
+    .eq('user_id', user.id)
+
+  const projectIds = userProjects?.map(p => p.project_id) || []
+
+  let projects: any[] = []
+  if (projectIds.length > 0) {
+    const { data: projectsData } = await supabase
+      .from('projects')
+      .select(`
+        id,
+        name,
+        tasks(id, status)
+      `)
+      .in('id', projectIds)
+      .is('archived_at', null)
+      .limit(5)
+    
+    projects = projectsData || []
+  }
 
   return (
     <div className="space-y-6">
