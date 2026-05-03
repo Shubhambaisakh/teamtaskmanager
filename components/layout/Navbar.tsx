@@ -58,14 +58,12 @@ export function Navbar({ user, profile }: NavbarProps) {
         <NotificationsDropdown />
 
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <AvatarWithFallback
-                src={profile?.avatar_url}
-                alt={profile?.full_name || 'User'}
-                fallback={profile?.full_name?.[0] || 'U'}
-              />
-            </Button>
+          <DropdownMenuTrigger className="relative inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            <AvatarWithFallback
+              src={profile?.avatar_url}
+              alt={profile?.full_name || 'User'}
+              fallback={profile?.full_name?.[0] || 'U'}
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
@@ -78,7 +76,7 @@ export function Navbar({ user, profile }: NavbarProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <a href="/dashboard/settings/profile" className="cursor-pointer flex items-center">
+              <a href="/settings" className="cursor-pointer flex items-center">
                 <UserIcon className="mr-2 h-4 w-4" />
                 Profile Settings
               </a>

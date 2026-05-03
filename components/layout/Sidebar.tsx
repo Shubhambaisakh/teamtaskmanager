@@ -7,9 +7,9 @@ import { LayoutDashboard, FolderKanban, CheckSquare, Settings } from 'lucide-rea
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
-  { name: 'My Tasks', href: '/dashboard/my-tasks', icon: CheckSquare },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: 'Projects', href: '/projects', icon: FolderKanban },
+  { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {

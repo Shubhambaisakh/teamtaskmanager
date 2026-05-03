@@ -29,7 +29,7 @@ export async function GET() {
         tasks(
           id,
           title,
-          projects(id, name)
+          project_id
         )
       `)
       .eq('user_id', user.id)

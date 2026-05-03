@@ -113,7 +113,7 @@ export function MyTasksList({ tasks }: MyTasksListProps) {
             {filteredTasks.map((task) => (
               <Link
                 key={task.id}
-                href={`/dashboard/projects/${task.projects.id}/board`}
+                href={`/projects/${task.projects.id}/board`}
                 className="block"
               >
                 <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">

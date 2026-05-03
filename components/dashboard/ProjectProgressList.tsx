@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProjectProgressBar } from '@/components/projects/ProjectProgressBar'
@@ -40,7 +42,7 @@ export function ProjectProgressList({ projects }: ProjectProgressListProps) {
               return (
                 <Link
                   key={project.id}
-                  href={`/dashboard/projects/${project.id}/board`}
+                  href={`/projects/${project.id}/board`}
                   className="block"
                 >
                   <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">

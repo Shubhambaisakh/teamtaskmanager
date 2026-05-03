@@ -1,10 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { FolderKanban, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { ProjectCard } from '@/components/projects/ProjectCard'
-import { EmptyState } from '@/components/shared/EmptyState'
+import { ProjectsList } from '@/components/projects/ProjectsList'
 
 export default async function ProjectsPage() {
   const supabase = await createClient()
@@ -17,52 +13,43 @@ export default async function ProjectsPage() {
     redirect('/login')
   }
 
-  // Fetch projects
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/projects`, {
-    headers: {
-      Cookie: (await import('next/headers')).cookies().toString(),
-    },
-    cache: 'no-store',
-  })
+  // Fetch projects directly from Supabase
+  const { data: projects, error } = await supabase
+    .from('project_members')
+    .select(`
+      role,
+      projects (
+        id,
+        name,
+        description,
+        archived_at,
+        created_at,
+        tasks (
+          id,
+          status
+        )
+      )
+    `)
+    .eq('user_id', user.id)
+    .order('created_at', { foreignTable: 'projects', ascending: false })
 
-  const projects = response.ok ? await response.json() : []
+  if (error) {
+    console.error('Error fetching projects:', error)
+  }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-            Projects
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Manage your team projects and track progress
-          </p>
-        </div>
-        <Link href="/dashboard/projects/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Project
-          </Button>
-        </Link>
-      </div>
+  // Transform the data to match expected format
+  const projectsData = projects?.map((pm: any) => {
+    const project = pm.projects
+    const totalTasks = project.tasks?.length || 0
+    const doneTasks = project.tasks?.filter((t: any) => t.status === 'done').length || 0
+    
+    return {
+      ...project,
+      role: pm.role,
+      task_count: totalTasks,
+      done_count: doneTasks,
+    }
+  }) || []
 
-      {projects.length === 0 ? (
-        <EmptyState
-          icon={FolderKanban}
-          title="No projects yet"
-          description="Create your first project to start organizing tasks and collaborating with your team."
-          action={{
-            label: 'Create Project',
-            onClick: () => (window.location.href = '/dashboard/projects/new'),
-          }}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project: any) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      )}
-    </div>
-  )
+  return <ProjectsList projects={projectsData} />
 }

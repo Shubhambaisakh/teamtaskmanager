@@ -42,7 +42,7 @@ export function ProjectForm() {
 
       const project = await response.json()
       toast.success('Project created successfully!')
-      router.push(`/dashboard/projects/${project.id}/board`)
+      router.push(`/projects/${project.id}/board`)
       router.refresh()
     } catch (error) {
       toast.error('An unexpected error occurred')

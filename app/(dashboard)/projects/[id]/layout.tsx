@@ -53,17 +53,17 @@ export default async function ProjectLayout({
 
       <Tabs defaultValue="board" className="w-full">
         <TabsList>
-          <Link href={`/dashboard/projects/${id}/board`}>
+          <Link href={`/projects/${id}/board`}>
             <TabsTrigger value="board">Board</TabsTrigger>
           </Link>
-          <Link href={`/dashboard/projects/${id}/list`}>
+          <Link href={`/projects/${id}/list`}>
             <TabsTrigger value="list">List</TabsTrigger>
           </Link>
-          <Link href={`/dashboard/projects/${id}/members`}>
+          <Link href={`/projects/${id}/members`}>
             <TabsTrigger value="members">Members</TabsTrigger>
           </Link>
           {userRole === 'admin' && (
-            <Link href={`/dashboard/projects/${id}/settings`}>
+            <Link href={`/projects/${id}/settings`}>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </Link>
           )}

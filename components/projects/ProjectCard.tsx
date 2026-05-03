@@ -22,7 +22,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
     : 0
 
   return (
-    <Link href={`/dashboard/projects/${project.id}/board`}>
+    <Link href={`/projects/${project.id}/board`}>
       <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
         <CardHeader>
           <div className="flex items-start justify-between">

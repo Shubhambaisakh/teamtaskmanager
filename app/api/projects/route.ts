@@ -84,8 +84,11 @@ export async function POST(request: Request) {
       )
     }
 
-    // Insert project
-    const { data: project, error: projectError } = await supabase
+    const { createAdminClient } = await import('@/lib/supabase/admin')
+    const adminSupabase = createAdminClient()
+
+    // Insert project using admin client to ensure we get the ID back and bypass RLS
+    const { data: project, error: projectError } = await adminSupabase
       .from('projects')
       .insert({
         name: validation.data.name,
@@ -99,8 +102,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 
-    // Add creator as admin
-    const { error: memberError } = await supabase
+    // Add creator as admin using admin client
+    const { error: memberError } = await adminSupabase
       .from('project_members')
       .insert({
         project_id: project.id,
@@ -110,8 +113,8 @@ export async function POST(request: Request) {
 
     if (memberError) {
       console.error('Error adding project member:', memberError)
-      // Rollback: delete the project
-      await supabase.from('projects').delete().eq('id', project.id)
+      // Rollback: delete the project using admin client
+      await adminSupabase.from('projects').delete().eq('id', project.id)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 

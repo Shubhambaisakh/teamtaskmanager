@@ -46,7 +46,7 @@ export function DeleteProjectButton({ projectId, projectName }: DeleteProjectBut
       }
 
       toast.success('Project deleted successfully')
-      router.push('/dashboard/projects')
+      router.push('/projects')
       router.refresh()
     } catch (error) {
       toast.error('An unexpected error occurred')
