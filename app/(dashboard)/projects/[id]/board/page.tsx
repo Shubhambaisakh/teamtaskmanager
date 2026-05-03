@@ -53,17 +53,17 @@ export default async function ProjectBoardPage({
     .order('created_at', { ascending: false })
 
   // Fetch project members for assignee dropdown
-  const { data: membersData } = await supabase
+  const { data: membersData, error: membersError } = await supabase
     .from('project_members')
     .select(`
       user_id,
       role,
-      profiles!project_members_user_id_fkey(id, full_name, email, avatar_url)
+      profiles!inner(id, full_name, email, avatar_url)
     `)
     .eq('project_id', id)
 
   // Transform the data to match expected type
-  const members = membersData?.map(m => ({
+  const members = membersData?.map((m: any) => ({
     user_id: m.user_id,
     role: m.role,
     profiles: Array.isArray(m.profiles) ? m.profiles[0] : m.profiles
