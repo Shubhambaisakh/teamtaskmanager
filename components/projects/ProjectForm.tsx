@@ -80,6 +80,19 @@ export function ProjectForm() {
         )}
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="deadline">Project Deadline</Label>
+        <Input
+          id="deadline"
+          type="date"
+          {...register('deadline')}
+          disabled={isLoading}
+        />
+        {errors.deadline && (
+          <p className="text-sm text-red-500">{errors.deadline.message}</p>
+        )}
+      </div>
+
       <div className="flex gap-3">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create Project'}

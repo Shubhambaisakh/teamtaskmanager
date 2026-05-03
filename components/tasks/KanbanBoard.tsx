@@ -26,6 +26,16 @@ interface Task {
 interface KanbanBoardProps {
   projectId: string
   tasks: Task[]
+  members: Array<{
+    user_id: string
+    role: string
+    profiles: {
+      id: string
+      full_name: string
+      email: string
+      avatar_url: string | null
+    }
+  }>
   userRole: 'admin' | 'member'
   currentUserId: string
 }
@@ -37,7 +47,7 @@ const columns = [
   { id: 'done', title: 'Done' },
 ] as const
 
-export function KanbanBoard({ projectId, tasks, userRole, currentUserId }: KanbanBoardProps) {
+export function KanbanBoard({ projectId, tasks, members, userRole, currentUserId }: KanbanBoardProps) {
   const router = useRouter()
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -98,7 +108,7 @@ export function KanbanBoard({ projectId, tasks, userRole, currentUserId }: Kanba
     <div className="space-y-4">
       {userRole === 'admin' && (
         <div className="flex justify-end">
-          <CreateTaskDialog projectId={projectId} />
+          <CreateTaskDialog projectId={projectId} members={members} />
         </div>
       )}
 

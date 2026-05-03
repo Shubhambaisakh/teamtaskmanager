@@ -8,6 +8,7 @@ export const createProjectSchema = z.object({
     .max(1000, 'Description must be less than 1000 characters')
     .optional()
     .nullable(),
+  deadline: z.string().optional().nullable(),
 })
 
 export const updateProjectSchema = z.object({
@@ -19,6 +20,7 @@ export const updateProjectSchema = z.object({
     .max(1000, 'Description must be less than 1000 characters')
     .optional()
     .nullable(),
+  deadline: z.string().optional().nullable(),
   archived_at: z.string().datetime().optional().nullable(),
 }).refine((data) => Object.keys(data).length > 0, {
   message: 'At least one field must be provided',

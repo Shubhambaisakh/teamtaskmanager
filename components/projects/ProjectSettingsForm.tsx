@@ -16,6 +16,7 @@ interface ProjectSettingsFormProps {
     id: string
     name: string
     description: string | null
+    deadline: string | null
   }
 }
 
@@ -32,6 +33,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     defaultValues: {
       name: project.name,
       description: project.description,
+      deadline: project.deadline,
     },
   })
 
@@ -87,6 +89,19 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="deadline">Project Deadline</Label>
+        <Input
+          id="deadline"
+          type="date"
+          {...register('deadline')}
+          disabled={isLoading}
+        />
+        {errors.deadline && (
+          <p className="text-sm text-red-500">{errors.deadline.message}</p>
         )}
       </div>
 

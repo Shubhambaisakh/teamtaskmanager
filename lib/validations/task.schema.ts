@@ -11,8 +11,10 @@ export const createTaskSchema = z.object({
   description: z.string().optional().nullable(),
   status: taskStatusEnum.default('todo'),
   priority: taskPriorityEnum.default('medium'),
-  assignee_id: z.string().uuid('Invalid assignee ID').optional().nullable(),
-  due_date: z.string().date('Invalid date format').optional().nullable(),
+  assignee_id: z.string().uuid('Invalid assignee ID').optional().nullable()
+    .or(z.literal('').transform(() => null)),
+  due_date: z.string().optional().nullable()
+    .or(z.literal('').transform(() => null)),
 })
 
 export const updateTaskSchema = z.object({
@@ -23,8 +25,10 @@ export const updateTaskSchema = z.object({
   description: z.string().optional().nullable(),
   status: taskStatusEnum.optional(),
   priority: taskPriorityEnum.optional(),
-  assignee_id: z.string().uuid('Invalid assignee ID').optional().nullable(),
-  due_date: z.string().date('Invalid date format').optional().nullable(),
+  assignee_id: z.string().uuid('Invalid assignee ID').optional().nullable()
+    .or(z.literal('').transform(() => null)),
+  due_date: z.string().optional().nullable()
+    .or(z.literal('').transform(() => null)),
 }).refine((data) => Object.keys(data).length > 0, {
   message: 'At least one field must be provided',
 })

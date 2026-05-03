@@ -87,11 +87,13 @@ export function useNotifications() {
 
     // Subscribe to realtime notifications
     const supabase = createClient()
+    let channel: ReturnType<typeof supabase.channel> | null = null
     
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const channel = supabase
+      channel = supabase
         .channel('notifications')
         .on(
           'postgres_changes',
@@ -106,11 +108,15 @@ export function useNotifications() {
           }
         )
         .subscribe()
+    }
 
-      return () => {
+    setupRealtimeSubscription()
+
+    return () => {
+      if (channel) {
         supabase.removeChannel(channel)
       }
-    })
+    }
   }, [])
 
   return {

@@ -53,6 +53,34 @@ export async function PATCH(
       )
     }
 
+    // Get the member being updated
+    const { data: targetMember } = await supabase
+      .from('project_members')
+      .select('role, user_id')
+      .eq('id', memberId)
+      .eq('project_id', id)
+      .single()
+
+    if (!targetMember) {
+      return NextResponse.json({ error: 'Member not found' }, { status: 404 })
+    }
+
+    // Prevent demoting the last admin
+    if (targetMember.role === 'admin' && validation.data.role === 'member') {
+      const { count: adminCount } = await supabase
+        .from('project_members')
+        .select('id', { count: 'exact', head: true })
+        .eq('project_id', id)
+        .eq('role', 'admin')
+
+      if (adminCount === 1) {
+        return NextResponse.json(
+          { error: 'Cannot demote the last admin. Promote another member to admin first.' },
+          { status: 400 }
+        )
+      }
+    }
+
     // Update member role
     const { data: updatedMember, error } = await supabase
       .from('project_members')

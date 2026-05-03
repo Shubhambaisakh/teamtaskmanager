@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProfileSettings } from '@/components/settings/ProfileSettings'
+import { PasswordChangeForm } from '@/components/settings/PasswordChangeForm'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -62,6 +63,18 @@ export default async function SettingsPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">{user.id}</p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Change Password</CardTitle>
+          <CardDescription>
+            Update your password to keep your account secure
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PasswordChangeForm />
         </CardContent>
       </Card>
     </div>

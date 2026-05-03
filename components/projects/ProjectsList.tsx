@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FolderKanban, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,8 @@ interface ProjectsListProps {
 }
 
 export function ProjectsList({ projects }: ProjectsListProps) {
+  const router = useRouter()
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -48,7 +51,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
           description="Create your first project to start organizing tasks and collaborating with your team."
           action={{
             label: 'Create Project',
-            onClick: () => (window.location.href = '/projects/new'),
+            onClick: () => router.push('/projects/new'),
           }}
         />
       ) : (

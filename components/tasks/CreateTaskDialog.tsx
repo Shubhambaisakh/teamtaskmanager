@@ -32,6 +32,7 @@ const createTaskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
   description: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high', 'critical']),
+  assignee_id: z.string().optional(),
   due_date: z.string().optional(),
 })
 
@@ -39,9 +40,19 @@ type CreateTaskInput = z.infer<typeof createTaskSchema>
 
 interface CreateTaskDialogProps {
   projectId: string
+  members: Array<{
+    user_id: string
+    role: string
+    profiles: {
+      id: string
+      full_name: string
+      email: string
+      avatar_url: string | null
+    }
+  }>
 }
 
-export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
+export function CreateTaskDialog({ projectId, members }: CreateTaskDialogProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -93,11 +104,9 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Task
-        </Button>
+      <DialogTrigger render={<Button />}>
+        <Plus className="h-4 w-4 mr-2" />
+        New Task
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -152,14 +161,34 @@ export function CreateTaskDialog({ projectId }: CreateTaskDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="due_date">Due Date</Label>
-              <Input
-                id="due_date"
-                type="date"
-                {...register('due_date')}
+              <Label htmlFor="assignee">Assignee</Label>
+              <Select
+                onValueChange={(value) => setValue('assignee_id', value as string | undefined)}
                 disabled={isLoading}
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select assignee (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Unassigned</SelectItem>
+                  {members.map((member) => (
+                    <SelectItem key={member.user_id} value={member.user_id}>
+                      {member.profiles.full_name} ({member.role})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="due_date">Due Date</Label>
+            <Input
+              id="due_date"
+              type="date"
+              {...register('due_date')}
+              disabled={isLoading}
+            />
           </div>
 
           <DialogFooter>
