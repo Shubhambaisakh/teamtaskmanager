@@ -120,7 +120,7 @@ export default function SignUpPage() {
               fontWeight: '500',
               color: '#E8E8F0',
               letterSpacing: '-0.3px'
-            }}>TaskFlow</span>
+            }}>QuickTask</span>
           </Link>
 
           {/* Card */}
@@ -158,7 +158,7 @@ export default function SignUpPage() {
                 <input
                   id="full_name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Rahul"
                   {...register('full_name')}
                   disabled={isLoading}
                   style={{
@@ -199,7 +199,7 @@ export default function SignUpPage() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="john@example.com"
+                  placeholder="rahul@example.com"
                   {...register('email')}
                   disabled={isLoading}
                   style={{

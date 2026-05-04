@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   const handleGithub = () => {
-    window.open('https://github.com/yourusername/taskflow', '_blank')
+    window.open('https://github.com/yourusername/QuickTask', '_blank')
   }
 
   if (isLoading) {
@@ -466,7 +466,7 @@ export default function Home() {
                 <rect x="14" y="14" width="7" height="7" rx="1.5"/>
               </svg>
             </div>
-            <span className="nav-brand">TaskFlow</span>
+            <span className="nav-brand">QuickTask</span>
           </div>
           <div className="nav-actions">
             <button className="btn-ghost" onClick={handleSignIn}>Sign in</button>
@@ -568,7 +568,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="footer">
-          <span className="footer-txt">TaskFlow — Team Task Manager</span>
+          <span className="footer-txt">QuickTask — Team Task Manager</span>
           <span className="footer-txt">Next.js 15 + Supabase + Railway</span>
         </footer>
       </div>

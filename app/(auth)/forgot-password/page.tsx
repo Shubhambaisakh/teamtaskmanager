@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
               fontWeight: '500',
               color: '#E8E8F0',
               letterSpacing: '-0.3px'
-            }}>TaskFlow</span>
+            }}>QuickTask</span>
           </Link>
 
           {/* Card */}

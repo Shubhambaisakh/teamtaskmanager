@@ -28,7 +28,7 @@ export function Sidebar() {
             </svg>
           </div>
           <h1 className="text-sm font-semibold text-[#E8E8F0] tracking-tight">
-            TaskFlow
+            QuickTask
           </h1>
         </div>
       </div>

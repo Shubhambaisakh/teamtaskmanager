@@ -459,7 +459,7 @@ export default function TeamTaskManager() {
                 <rect x="14" y="14" width="7" height="7" rx="1.5" />
               </svg>
             </div>
-            <span className="nav-brand">TaskFlow</span>
+            <span className="nav-brand">QuickTask</span>
           </div>
           <div className="nav-links">
             <a href="#">Features</a>
@@ -510,13 +510,13 @@ export default function TeamTaskManager() {
               <div className="dot dot-r" />
               <div className="dot dot-y" />
               <div className="dot dot-g" />
-              <div className="mockup-url">app.taskflow.io/dashboard/projects/alpha/board</div>
+              <div className="mockup-url">app.QuickTask.io/dashboard/projects/alpha/board</div>
             </div>
             <div className="mockup-body">
               <div className="mockup-sidebar">
                 <div className="sb-logo">
                   <div className="sb-logo-icon" />
-                  <span className="sb-logo-text">TaskFlow</span>
+                  <span className="sb-logo-text">QuickTask</span>
                 </div>
                 <div className="sb-item active"><span className="si-d" />Dashboard</div>
                 <div className="sb-item"><span className="si-d" />Projects</div>
@@ -823,7 +823,7 @@ export default function TeamTaskManager() {
                 <rect x="14" y="14" width="7" height="7" rx="1.5" />
               </svg>
             </div>
-            <span className="footer-txt">TaskFlow — Team Task Manager</span>
+            <span className="footer-txt">QuickTask — Team Task Manager</span>
           </div>
           <div className="footer-links">
             <a href="#">GitHub</a>
