@@ -1,7 +1,19 @@
 import { Resend } from 'resend';
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialize Resend only when needed (not at build time)
+let resendInstance: Resend | null = null;
+
+function getResendClient() {
+  if (!resendInstance) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.warn('RESEND_API_KEY not found. Email functionality will be disabled.');
+      return null;
+    }
+    resendInstance = new Resend(apiKey);
+  }
+  return resendInstance;
+}
 
 // Email sender configuration
 const FROM_EMAIL = 'onboarding@resend.dev'; // Replace with your verified domain email
@@ -11,6 +23,12 @@ const APP_NAME = 'Team Task Manager';
  * Send welcome email to new user
  */
 export async function sendWelcomeEmail(to: string, userName: string) {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Resend client not available. Skipping email.');
+    return { success: false, error: 'Email service not configured' };
+  }
+  
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -56,6 +74,12 @@ export async function sendTaskAssignmentEmail(
   projectName: string,
   taskUrl: string
 ) {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Resend client not available. Skipping email.');
+    return { success: false, error: 'Email service not configured' };
+  }
+  
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -99,6 +123,12 @@ export async function sendPasswordResetEmail(
   userName: string,
   resetUrl: string
 ) {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Resend client not available. Skipping email.');
+    return { success: false, error: 'Email service not configured' };
+  }
+  
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -144,6 +174,12 @@ export async function sendCommentNotificationEmail(
   commentBody: string,
   taskUrl: string
 ) {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Resend client not available. Skipping email.');
+    return { success: false, error: 'Email service not configured' };
+  }
+  
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -189,6 +225,12 @@ export async function sendProjectInvitationEmail(
   projectName: string,
   projectUrl: string
 ) {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Resend client not available. Skipping email.');
+    return { success: false, error: 'Email service not configured' };
+  }
+  
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
