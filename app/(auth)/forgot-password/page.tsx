@@ -1,17 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validations/auth.schema'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [emailSent, setEmailSent] = useState(false)
-  const supabase = createClient()
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
+
+  useEffect(() => {
+    setSupabase(createClient())
+  }, [])
 
   const {
     register,
@@ -22,6 +27,11 @@ export default function ForgotPasswordPage() {
   })
 
   const onSubmit = async (data: ForgotPasswordInput) => {
+    if (!supabase) {
+      toast.error('Client not initialized')
+      return
+    }
+
     setIsLoading(true)
     try {
       const redirectUrl = typeof window !== 'undefined' 

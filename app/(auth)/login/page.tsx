@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
@@ -8,12 +8,17 @@ import Link from 'next/link'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth.schema'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const supabase = createClient()
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
+
+  useEffect(() => {
+    setSupabase(createClient())
+  }, [])
 
   const {
     register,
@@ -24,6 +29,11 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginInput) => {
+    if (!supabase) {
+      toast.error('Client not initialized')
+      return
+    }
+
     setIsLoading(true)
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -47,6 +57,11 @@ export default function LoginPage() {
   }
 
   const handleGoogleSignIn = async () => {
+    if (!supabase) {
+      toast.error('Client not initialized')
+      return
+    }
+
     setIsGoogleLoading(true)
     try {
       const redirectUrl = typeof window !== 'undefined' 
